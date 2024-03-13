@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-api-deployment  # Name of the deployment
+spec:
+  replicas: 3  # Number of replicas for high availability
+  selector:
+    matchLabels:
+      app: weather-api  # Label selector for pods controlled by this deployment
+  template:
+    metadata:
+      labels:
+        app: weather-api  # Labels applied to pods created by this template
+    spec:
+      containers:
+      - name: weather-api-container  # Name of the container
+        image: naveta/node-k8-open-weather:v1  # Docker image for the container
+        ports:
+        - containerPort: 4000  # Port on which the container listens
+        envFrom:  # Load environment variables from ConfigMap and Secret
+        - configMapRef:
+            name: weather-api-configmap  # Name of the ConfigMap
+        - secretRef:
+            name: openweathermap-api-secret  # Name of the Secret
+        resources:  # Resource limits and requests
+          requests:
+            memory: "256Mi"  # Requested memory for the pod
+            cpu: "100m"      # Requested CPU resources for the pod
+          limits:
+            memory: "512Mi"  # Maximum memory limit for the pod
+            cpu: "500m"      # Maximum CPU limit for the pod
